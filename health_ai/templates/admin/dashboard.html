@@ -1,0 +1,234 @@
+﻿{% extends "base.html" %}
+{% block title %}Dashboard - AI Health System{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-container">
+
+    <!-- Welcome -->
+    <div class="welcome-banner">
+
+        <div>
+
+            <h2>
+                <i class="fas fa-heartbeat"></i>
+                Hello, {{ user.full_name }}!
+            </h2>
+
+            <p>
+                AI-powered disease prediction system
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Upload Section -->
+    <div class="upload-card">
+
+        <h3>
+            <i class="fas fa-x-ray"></i>
+            Upload Medical Image
+        </h3>
+
+        <form action="/predict-image"
+              method="POST"
+              enctype="multipart/form-data">
+
+            <input type="file"
+                   name="image"
+                   required>
+
+            <button type="submit"
+                    class="btn btn-primary">
+
+                Predict Disease
+
+            </button>
+
+        </form>
+
+    </div>
+
+
+
+    <!-- Symptom Section -->
+    {% if categories is defined %}
+
+    <div class="upload-card"
+         style="margin-top:25px;">
+
+        <h3>
+            <i class="fas fa-stethoscope"></i>
+            Select Symptoms
+        </h3>
+
+        <form method="POST"
+              action="{{ url_for('prediction.predict') }}">
+
+            {% for category, symptoms in categories.items() %}
+
+            <div class="symptom-category">
+
+                <h4>{{ category }}</h4>
+
+                <div class="symptoms-grid">
+
+                    {% for symptom in symptoms %}
+
+                    <label class="symptom-chip">
+
+                        <input type="checkbox"
+                               name="symptoms"
+                               value="{{ symptom }}">
+
+                        {{ symptom.replace('_', ' ').title() }}
+
+                    </label>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+            <button type="submit"
+                    class="btn btn-primary"
+                    style="margin-top:20px;">
+
+                Predict from Symptoms
+
+            </button>
+
+        </form>
+
+    </div>
+
+    {% endif %}
+
+
+
+    <!-- Prediction Result -->
+    {% if result is defined %}
+
+    <div class="result-card"
+         style="margin-top:30px;">
+
+        <h3>
+            Prediction Result
+        </h3>
+
+        <h2>
+            {{ result.disease }}
+        </h2>
+
+        <p>
+            <strong>Severity:</strong>
+            {{ result.severity }}
+        </p>
+
+
+        <!-- Confidence Bar -->
+        <div class="confidence-bar">
+
+            <div class="confidence-fill"
+                 id="confidenceFill"
+                 data-confidence="{{ result.confidence }}">
+
+                {{ result.confidence }}%
+
+            </div>
+
+        </div>
+
+
+        <p style="margin-top:20px;">
+
+            {{ result.recommendation }}
+
+        </p>
+
+    </div>
+
+    {% endif %}
+
+
+
+    <!-- Recent Predictions -->
+    {% if recent_predictions is defined and recent_predictions %}
+
+    <div class="recent-section"
+         style="margin-top:30px;">
+
+        <h3>
+            <i class="fas fa-history"></i>
+            Recent Predictions
+        </h3>
+
+        <table class="predictions-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>#</th>
+                    <th>Disease</th>
+                    <th>Confidence</th>
+                    <th>Severity</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for p in recent_predictions %}
+
+                <tr>
+
+                    <td>{{ loop.index }}</td>
+
+                    <td>{{ p.predicted_disease }}</td>
+
+                    <td>{{ p.confidence }}%</td>
+
+                    <td>{{ p.severity }}</td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const fill = document.getElementById("confidenceFill");
+
+    if(fill){
+
+        const confidence = fill.getAttribute("data-confidence");
+
+        fill.style.width = confidence + "%";
+    }
+
+});
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,54 @@
+﻿{% extends "base.html" %}
+{% block title %}Verify OTP - AI Health System{% endblock %}
+{% block content %}
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-icon"><i class="fas fa-shield-alt"></i></div>
+      <h2>Enter OTP</h2>
+      <p>Check the OTP shown above or sent to <strong>{{ session.get('reset_email', 'your email') }}</strong></p>
+    </div>
+
+    <div class="steps-indicator">
+      <div class="step done"><span><i class="fas fa-check"></i></span> Email</div>
+      <div class="step-line active"></div>
+      <div class="step active"><span>2</span> OTP</div>
+      <div class="step-line"></div>
+      <div class="step"><span>3</span> Reset</div>
+    </div>
+
+    <form method="POST" action="{{ url_for('auth.verify_otp') }}" class="auth-form">
+      <div class="form-group">
+        <label for="otp_code"><i class="fas fa-key"></i> 6-Digit OTP</label>
+        <input type="text" id="otp_code" name="otp_code"
+               placeholder="Enter 6-digit OTP"
+               maxlength="6" pattern="\d{6}"
+               inputmode="numeric"
+               autocomplete="one-time-code"
+               class="otp-input" required autofocus/>
+        <small class="form-hint">OTP is valid for 10 minutes.</small>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full">
+        <i class="fas fa-check-circle"></i> Verify OTP
+      </button>
+    </form>
+
+    <div class="auth-footer" style="margin-top:16px;">
+      Didn't get it?
+      <form method="POST" action="{{ url_for('auth.resend_otp') }}" style="display:inline;">
+        <button type="submit" class="btn-link">Resend OTP</button>
+      </form>
+      &nbsp;|&nbsp;
+      <a href="{{ url_for('auth.forgot_password') }}">Change email</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  var inp = document.getElementById('otp_code');
+  inp.addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g,'').slice(0,6);
+  });
+</script>
+{% endblock %}

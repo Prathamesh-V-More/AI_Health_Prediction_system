@@ -1,0 +1,64 @@
+﻿{% extends "base.html" %}
+{% block title %}Manage Users - Admin{% endblock %}
+{% block content %}
+<div class="dashboard-container">
+  <div class="section-header" style="margin-bottom:24px;">
+    <h2><i class="fas fa-users"></i> All Users</h2>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline btn-sm">
+      <i class="fas fa-arrow-left"></i> Back
+    </a>
+  </div>
+  <div class="recent-section">
+    <div class="predictions-table-wrap">
+      <table class="predictions-table">
+        <thead>
+          <tr>
+            <th>#</th><th>Name</th><th>Email</th><th>Phone</th>
+            <th>Age</th><th>Gender</th><th>Joined</th><th>Status</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td><strong>{{ u.full_name }}</strong></td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.phone or '-' }}</td>
+            <td>{{ u.age or '-' }}</td>
+            <td>{{ u.gender or '-' }}</td>
+            <td>{{ u.created_at.strftime('%b %d, %Y') }}</td>
+            <td>
+              <span class="badge-type {{ 'badge-xray' if u.is_active else 'badge-skin' }}">
+                {{ 'Active' if u.is_active else 'Inactive' }}
+              </span>
+            </td>
+            <td style="display:flex;gap:6px;flex-wrap:wrap;">
+              <!-- Toggle Active/Inactive -->
+              <form method="POST" action="{{ url_for('admin.toggle_user', user_id=u.id) }}" style="display:inline;">
+                <button type="submit" class="btn btn-sm {{ 'btn-outline' if u.is_active else 'btn-primary' }}">
+                  {{ 'Deactivate' if u.is_active else 'Activate' }}
+                </button>
+              </form>
+              <!-- Delete -->
+              <form method="POST" action="{{ url_for('admin.delete_user', user_id=u.id) }}"
+                    style="display:inline;"
+                    onsubmit="return confirm('Delete {{ u.full_name }}? This will also delete all their predictions. This cannot be undone.');">
+                <button type="submit" class="btn btn-sm" style="background:#dc3545;color:white;border-color:#dc3545;">
+                  <i class="fas fa-trash"></i> Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if not users %}
+    <div class="empty-state">
+      <i class="fas fa-users"></i>
+      <h3>No users registered yet</h3>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

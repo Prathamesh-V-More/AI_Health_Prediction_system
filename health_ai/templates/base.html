@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}AI Health Prediction{% endblock %}</title>
+
+  <!-- IMPORTANT -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+
+  <link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+
+<body>
+
+{% if session.get('user_id') %}
+<nav class="navbar">
+  <a href="{{ url_for('auth.home') }}" class="nav-brand">
+    <i class="fas fa-heartbeat"></i> AI Health System
+  </a>
+
+  <div class="nav-links">
+    <a href="{{ url_for('prediction.dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('prediction.history') }}">History</a>
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+  </div>
+</nav>
+{% endif %}
+
+<div class="page-wrapper">
+  {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>

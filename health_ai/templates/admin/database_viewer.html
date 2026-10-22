@@ -1,0 +1,191 @@
+﻿{% extends "base.html" %}
+{% block title %}Database Viewer - Admin{% endblock %}
+{% block content %}
+<div class="dashboard-container">
+
+  <div class="section-header" style="margin-bottom:24px;">
+    <h2><i class="fas fa-database"></i> Database Viewer
+      <span style="font-size:13px;color:#28a745;background:#d4edda;
+                   padding:3px 10px;border-radius:12px;margin-left:10px;font-weight:500;">
+        READ ONLY
+      </span>
+    </h2>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline btn-sm">
+      <i class="fas fa-arrow-left"></i> Back
+    </a>
+  </div>
+
+  <div class="db-notice">
+    <i class="fas fa-lock"></i>
+    This is a <strong>read-only</strong> view of the database.
+    No data can be edited or deleted from this page.
+    Database file: <code>instance/health_ai.db</code>
+  </div>
+
+  <!-- Tab buttons -->
+  <div class="db-tabs">
+    <button class="db-tab active" onclick="showTab('users', this)">
+      <i class="fas fa-users"></i> Users
+      <span class="tab-badge">{{ users|length }}</span>
+    </button>
+    <button class="db-tab" onclick="showTab('predictions', this)">
+      <i class="fas fa-brain"></i> Predictions
+      <span class="tab-badge">{{ predictions|length }}</span>
+    </button>
+    <button class="db-tab" onclick="showTab('otps', this)">
+      <i class="fas fa-key"></i> OTP Records
+      <span class="tab-badge">{{ otps|length }}</span>
+    </button>
+  </div>
+
+  <!-- Users Table -->
+  <div class="db-table-wrap" id="tab-users">
+    <div class="db-table-header">
+      <span><i class="fas fa-table"></i> Table: <code>users</code></span>
+      <span style="color:#6c757d;font-size:13px;">{{ users|length }} records</span>
+    </div>
+    <div class="predictions-table-wrap">
+      <table class="predictions-table db-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Phone</th>
+            <th>Role</th>
+            <th>Active</th>
+            <th>Created At</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td><code>{{ u.id }}</code></td>
+            <td>{{ u.full_name }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.age or '-' }}</td>
+            <td>{{ u.gender or '-' }}</td>
+            <td>{{ u.phone or '-' }}</td>
+            <td>
+              <span class="badge-type {{ 'badge-skin' if u.role == 'admin' else 'badge-xray' }}">
+                {{ u.role }}
+              </span>
+            </td>
+            <td>
+              <span style="color:{{ '#28a745' if u.is_active else '#dc3545' }};">
+                {{ 'Yes' if u.is_active else 'No' }}
+              </span>
+            </td>
+            <td>{{ u.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Predictions Table -->
+  <div class="db-table-wrap" id="tab-predictions" style="display:none;">
+    <div class="db-table-header">
+      <span><i class="fas fa-table"></i> Table: <code>predictions</code></span>
+      <span style="color:#6c757d;font-size:13px;">{{ predictions|length }} records</span>
+    </div>
+    <div class="predictions-table-wrap">
+      <table class="predictions-table db-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>User ID</th>
+            <th>User Name</th>
+            <th>Disease Type</th>
+            <th>Predicted Disease</th>
+            <th>Confidence</th>
+            <th>Severity</th>
+            <th>Symptoms / Image</th>
+            <th>Created At</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in predictions %}
+          <tr>
+            <td><code>{{ p.id }}</code></td>
+            <td><code>{{ p.user_id }}</code></td>
+            <td>{{ p.user.full_name }}</td>
+            <td>
+              <span class="badge-type badge-xray">{{ p.disease_type }}</span>
+            </td>
+            <td><strong>{{ p.predicted_disease }}</strong></td>
+            <td>{{ p.confidence }}%</td>
+            <td>
+              <span class="result-badge badge-{{ (p.severity or 'unknown')|lower }}">
+                {{ p.severity or 'N/A' }}
+              </span>
+            </td>
+            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:#6c757d;">
+              {{ p.image_filename }}
+            </td>
+            <td>{{ p.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- OTP Table -->
+  <div class="db-table-wrap" id="tab-otps" style="display:none;">
+    <div class="db-table-header">
+      <span><i class="fas fa-table"></i> Table: <code>otps</code> (last 50)</span>
+      <span style="color:#6c757d;font-size:13px;">{{ otps|length }} records</span>
+    </div>
+    <div class="predictions-table-wrap">
+      <table class="predictions-table db-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>OTP Code</th>
+            <th>Created At</th>
+            <th>Expires At</th>
+            <th>Used</th>
+            <th>Expired</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for o in otps %}
+          <tr>
+            <td><code>{{ o.id }}</code></td>
+            <td>{{ o.email }}</td>
+            <td>
+              <code style="font-size:16px;letter-spacing:4px;color:#2c7be5;">
+                {{ o.otp_code }}
+              </code>
+            </td>
+            <td>{{ o.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>{{ o.expires_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td style="color:{{ '#28a745' if o.is_used else '#6c757d' }};">
+              {{ 'Yes' if o.is_used else 'No' }}
+            </td>
+            <td style="color:{{ '#dc3545' if o.is_expired() else '#28a745' }};">
+              {{ 'Yes' if o.is_expired() else 'No' }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showTab(name, btn) {
+  document.querySelectorAll('.db-table-wrap').forEach(function(t){ t.style.display='none'; });
+  document.querySelectorAll('.db-tab').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('tab-' + name).style.display = 'block';
+  btn.classList.add('active');
+}
+</script>
+{% endblock %}

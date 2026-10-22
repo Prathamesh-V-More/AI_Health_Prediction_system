@@ -1,0 +1,19 @@
+# Dataset images
+**/datasetfinal/
+
+# Secrets
+.env
+**/.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+.venv/
+venv/
+
+.vscode/health_ai/err.txt
+health_ai/out.txt
+health_ai/instance/
+health_ai/static/uploads/

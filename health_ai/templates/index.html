@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Health Prediction System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body class="landing-body">
+  <div class="landing-wrapper">
+    <div class="landing-hero">
+      <div class="hero-icon"><i class="fas fa-heartbeat"></i></div>
+      <h1>AI Health Prediction System</h1>
+      <p class="hero-sub">Upload a chest X-ray or skin image and get an instant AI-powered disease prediction with a detailed PDF report sent to your email.</p>
+      <div class="hero-buttons">
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">
+          <i class="fas fa-sign-in-alt"></i> User Login
+        </a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-outline btn-lg">
+          <i class="fas fa-user-plus"></i> Register
+        </a>
+        <a href="{{ url_for('auth.admin_login') }}" class="btn btn-admin btn-lg">
+          <i class="fas fa-user-shield"></i> Admin Login
+        </a>
+      </div>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-x-ray"></i></div>
+        <h3>Chest X-Ray Analysis</h3>
+        <p>Detect Pneumonia, Tuberculosis, COVID-19, Pleural Effusion and more.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-allergies"></i></div>
+        <h3>Skin Disease Detection</h3>
+        <p>Identify Melanoma, Eczema, Psoriasis, Acne, Ringworm and more.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-file-pdf"></i></div>
+        <h3>PDF Report via Email</h3>
+        <p>Receive a detailed medical report with diagnosis and recommendations.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+        <h3>Secure & Private</h3>
+        <p>Your data is stored securely with private prediction history per user.</p>
+      </div>
+    </div>
+    <p class="landing-disclaimer">
+      This system is for informational purposes only and does not replace professional medical advice.
+    </p>
+  </div>
+</body>
+</html>

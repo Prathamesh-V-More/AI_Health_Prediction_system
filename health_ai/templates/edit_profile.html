@@ -1,0 +1,87 @@
+﻿{% extends "base.html" %}
+{% block title %}Edit Profile - AI Health System{% endblock %}
+{% block content %}
+<div class="auth-container">
+  <div class="auth-card auth-card-wide">
+    <div class="auth-header">
+      <div class="auth-icon"><i class="fas fa-user-edit"></i></div>
+      <h2>Edit Profile</h2>
+      <p>Update your personal information</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('auth.edit_profile') }}" class="auth-form">
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label><i class="fas fa-user"></i> Full Name *</label>
+          <input type="text" name="full_name" value="{{ user.full_name }}" required/>
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-envelope"></i> Email</label>
+          <input type="email" value="{{ user.email }}" disabled
+                 style="background:#f8f9fa;color:#6c757d;"/>
+          <small class="form-hint">Email cannot be changed here.</small>
+        </div>
+      </div>
+
+      <div class="form-row-3">
+        <div class="form-group">
+          <label><i class="fas fa-birthday-cake"></i> Age</label>
+          <input type="number" name="age" value="{{ user.age or '' }}" min="1" max="120"/>
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-venus-mars"></i> Gender</label>
+          <select name="gender">
+            <option value="">Select</option>
+            <option value="Male"   {{ 'selected' if user.gender == 'Male' }}>Male</option>
+            <option value="Female" {{ 'selected' if user.gender == 'Female' }}>Female</option>
+            <option value="Other"  {{ 'selected' if user.gender == 'Other' }}>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-phone"></i> Phone</label>
+          <input type="tel" name="phone" value="{{ user.phone or '' }}"/>
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid #dee2e6;margin:8px 0;"/>
+      <p style="font-size:13px;color:#6c757d;margin-bottom:8px;">
+        <i class="fas fa-lock"></i> Change Password (leave blank to keep current)
+      </p>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>New Password</label>
+          <div class="input-eye">
+            <input type="password" name="new_password" id="new_password"
+                   placeholder="Min. 6 characters"/>
+            <button type="button" class="eye-btn" onclick="togglePassword('new_password')">
+              <i class="fas fa-eye" id="eye-new_password"></i>
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Confirm New Password</label>
+          <div class="input-eye">
+            <input type="password" name="confirm_password" id="confirm_password"
+                   placeholder="Repeat new password"/>
+            <button type="button" class="eye-btn" onclick="togglePassword('confirm_password')">
+              <i class="fas fa-eye" id="eye-confirm_password"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full">
+        <i class="fas fa-save"></i> Save Changes
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <a href="{{ url_for('prediction.dashboard') }}" class="btn btn-outline btn-sm">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

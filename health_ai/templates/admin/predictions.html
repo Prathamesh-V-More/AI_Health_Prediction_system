@@ -1,0 +1,43 @@
+﻿{% extends "base.html" %}
+{% block title %}All Predictions - Admin{% endblock %}
+{% block content %}
+<div class="dashboard-container">
+  <div class="section-header" style="margin-bottom:24px;">
+    <h2><i class="fas fa-chart-bar"></i> All Predictions</h2>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline btn-sm">
+      <i class="fas fa-arrow-left"></i> Back
+    </a>
+  </div>
+  <div class="recent-section">
+    <div class="predictions-table-wrap">
+      <table class="predictions-table">
+        <thead>
+          <tr><th>#</th><th>User</th><th>Type</th><th>Disease</th><th>Confidence</th><th>Severity</th><th>Date</th></tr>
+        </thead>
+        <tbody>
+          {% for p in predictions %}
+          <tr>
+            <td>{{ loop.index + (pagination.page-1)*15 }}</td>
+            <td>{{ p.user.full_name }}</td>
+            <td><span class="badge-type badge-{{ p.disease_type }}">{{ 'X-Ray' if p.disease_type=='xray' else 'Skin' }}</span></td>
+            <td><strong>{{ p.predicted_disease }}</strong></td>
+            <td>{{ p.confidence }}%</td>
+            <td><span class="result-badge badge-{{ (p.severity or 'unknown')|lower }}">{{ p.severity or 'N/A' }}</span></td>
+            <td>{{ p.created_at.strftime('%b %d, %Y %H:%M') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if pagination.pages > 1 %}
+    <div class="pagination">
+      {% if pagination.has_prev %}<a href="{{ url_for('admin.predictions', page=pagination.prev_num) }}" class="btn btn-outline btn-sm">&laquo; Prev</a>{% endif %}
+      {% for p in pagination.iter_pages(left_edge=1,right_edge=1,left_current=2,right_current=2) %}
+        {% if p %}<a href="{{ url_for('admin.predictions', page=p) }}" class="btn btn-sm {{ 'btn-primary' if p==pagination.page else 'btn-outline' }}">{{ p }}</a>{% else %}<span>...</span>{% endif %}
+      {% endfor %}
+      {% if pagination.has_next %}<a href="{{ url_for('admin.predictions', page=pagination.next_num) }}" class="btn btn-outline btn-sm">Next &raquo;</a>{% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

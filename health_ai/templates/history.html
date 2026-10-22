@@ -1,0 +1,110 @@
+﻿{% extends "base.html" %}
+{% block title %}Prediction History — AI Health System{% endblock %}
+{% block content %}
+<div class="dashboard-container">
+
+  <div class="section-header" style="margin-bottom:24px;">
+    <h2><i class="fas fa-history"></i> Prediction History</h2>
+    <a href="{{ url_for('prediction.dashboard') }}" class="btn btn-outline btn-sm">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <a href="{{ url_for('prediction.history', filter='all') }}"
+       class="btn btn-sm {{ 'btn-primary' if filter_type == 'all' else 'btn-outline' }}">All</a>
+    <a href="{{ url_for('prediction.history', filter='xray') }}"
+       class="btn btn-sm {{ 'btn-primary' if filter_type == 'xray' else 'btn-outline' }}">
+      <i class="fas fa-x-ray"></i> X-Ray
+    </a>
+    <a href="{{ url_for('prediction.history', filter='skin') }}"
+       class="btn btn-sm {{ 'btn-primary' if filter_type == 'skin' else 'btn-outline' }}">
+      <i class="fas fa-allergies"></i> Skin
+    </a>
+  </div>
+
+  {% if predictions %}
+  <div class="predictions-table-wrap">
+    <table class="predictions-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Image Type</th>
+          <th>Predicted Disease</th>
+          <th>Confidence</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in predictions %}
+        <tr>
+          <td>{{ loop.index + (pagination.page - 1) * 10 }}</td>
+          <td>
+            <span class="badge-type badge-{{ p.disease_type }}">
+              {% if p.disease_type == 'xray' %}
+                <i class="fas fa-x-ray"></i> X-Ray
+              {% else %}
+                <i class="fas fa-allergies"></i> Skin
+              {% endif %}
+            </span>
+          </td>
+          <td><strong>{{ p.predicted_disease }}</strong></td>
+          <td>
+            <div class="mini-bar">
+              <div class="mini-fill" data-width="{{ p.confidence }}"></div>
+              <span>{{ p.confidence }}%</span>
+            </div>
+          </td>
+          <td>{{ p.created_at.strftime('%b %d, %Y %H:%M') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  {% if pagination.pages > 1 %}
+  <div class="pagination">
+    {% if pagination.has_prev %}
+      <a href="{{ url_for('prediction.history', page=pagination.prev_num, filter=filter_type) }}"
+         class="btn btn-outline btn-sm">&laquo; Prev</a>
+    {% endif %}
+
+    {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+      {% if page_num %}
+        <a href="{{ url_for('prediction.history', page=page_num, filter=filter_type) }}"
+           class="btn btn-sm {{ 'btn-primary' if page_num == pagination.page else 'btn-outline' }}">
+          {{ page_num }}
+        </a>
+      {% else %}
+        <span class="pagination-ellipsis">...</span>
+      {% endif %}
+    {% endfor %}
+
+    {% if pagination.has_next %}
+      <a href="{{ url_for('prediction.history', page=pagination.next_num, filter=filter_type) }}"
+         class="btn btn-outline btn-sm">Next &raquo;</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% else %}
+  <div class="empty-state">
+    <i class="fas fa-folder-open"></i>
+    <h3>No predictions yet</h3>
+    <p>Upload a medical image from the dashboard to get started.</p>
+    <a href="{{ url_for('prediction.dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+  </div>
+  {% endif %}
+
+</div>
+
+<script>
+  // Apply confidence bar widths from data attributes (avoids inline Jinja style warnings)
+  document.querySelectorAll('.mini-fill[data-width]').forEach(function(el) {
+    var w = parseFloat(el.getAttribute('data-width'));
+    el.style.width = w + '%';
+  });
+</script>
+{% endblock %}
